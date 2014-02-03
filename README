@@ -1,0 +1,40 @@
+README:
+=======
+
+Author: Tyler Wendlandt
+
+list of files:
+	-test.c:
+		contains the test case source code -- calls memchunk
+	-test.h:
+		test.c header file
+	-memchunk.c:
+		contains the source code for scanning the virtual memory space
+	-memchunk.h:
+		memchunk.c's header file.
+	-writeup.txt:
+		contains the writeup - description of the chunks with respect to
+		different segments (text, data, bss, etc.)
+
+How to compile:
+	-Type 'make memchunk.o' into the command line to compile the
+		memchunk.o object
+	-Type 'make test.o' into the command line to compile the 
+		test.o object
+	-Type 'make' into the command line to compile whole project
+
+How to run:
+	-Type './memchunk -n [arg]' into the command line
+		-n [arg] are optional arguments, but must be used together.
+		[arg] will not be read without the -n flag
+	if -n [arg] is passed it will take on the role of 'size' which is passed
+	to memchunk.c's  get_mem_layout(struct memchunk *chunklist, int size);
+	However, if no argument is passed in the command line, the program 
+	sets 'size' to a default value of 9.
+
+	if [arg] is of invalid type (say a string) size is set to 0.
+	getopt handles all invalid flags and missing arguments by default.
+
+Output: 
+	Expected output is the formatted list of memory chunks and their
+	attributes.

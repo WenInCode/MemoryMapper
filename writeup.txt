@@ -1,0 +1,66 @@
+WRITE-UP:
+=========
+
+For instructions on how to run the test, view README.
+This file is only to view/analyze the memory chunks and their locations
+and permission.
+
+NOTE: the text within parentheses (chunk #) was added to this text file
+clarity and is not actually output by memchunk.
+NOTE(1): the output start addresses may have altered slightly during style reviewal
+
+Test Ouput:
+Chunks Found: 9  Chunks Stored: 9
+Start: 0x8048000       Size: 8192            RW: 0	(chunk 1)
+Start: 0x804a000       Size: 4096            RW: 1	(chunk 2)
+Start: 0xf7540000      Size: 4096            RW: 1	(chunk 3)
+Start: 0xf7541000      Size: 1728512         RW: 0	(chunk 4)
+Start: 0xf76e7000      Size: 16384           RW: 1	(chunk 5)
+Start: 0xf771d000      Size: 8192            RW: 1	(chunk 6)
+Start: 0xf771f000      Size: 139264          RW: 0	(chunk 7)
+Start: 0xf7741000      Size: 4096            RW: 1	(chunk 8)
+Start: 0xffd6d000      Size: 139264          RW: 1	(chunk 9)
+
+I ran the test again, this time putting the program to sleep and stopped the
+process to view the map. 
+
+This is the process map file:
+08048000-08049000 r-xp 00000000 00:25 35267 /cshome/twendlan/C379/Assignment1/memchunk
+08049000-0804a000 r--p 00000000 00:25 35267 /cshome/twendlan/C379/Assignment1/memchunk
+0804a000-0804b000 rw-p 00001000 00:25 35267 /cshome/twendlan/C379/Assignment1/memchunk
+f75d9000-f75da000 rw-p 00000000 00:00 0 
+f75da000-f777e000 r-xp 00000000 08:01 1439273 /lib/i386-linux-gnu/libc-2.15.so
+f777e000-f7780000 r--p 001a4000 08:01 1439273 /lib/i386-linux-gnu/libc-2.15.so
+f7780000-f7781000 rw-p 001a6000 08:01 1439273 /lib/i386-linux-gnu/libc-2.15.so
+f7781000-f7784000 rw-p 00000000 00:00 0 
+f77b5000-f77b8000 rw-p 00000000 00:00 0 
+f77b8000-f77b9000 r-xp 00000000 00:00 0       [vdso]
+f77b9000-f77d9000 r-xp 00000000 08:01 1439263 /lib/i386-linux-gnu/ld-2.15.so
+f77d9000-f77da000 r--p 0001f000 08:01 1439263 /lib/i386-linux-gnu/ld-2.15.so
+f77da000-f77db000 rw-p 00020000 08:01 1439263 /lib/i386-linux-gnu/ld-2.15.so
+ffc83000-ffca5000 rw-p 00000000 00:00 0       [stack]
+
+Recall that the memory is laid to in the following order from lowest memory
+address to greatest (virtual): 
+	Text -> Data -> bss -> Heap -> Stack
+
+>Region 08048000-08049000 is read-execute only (so in memchunk, RW = 0)
+	this would be the Text Segment.
+Therefore chunk 1, Start: 0x8048000, corresponds to the Text Segment
+
+>Region 0804a000-0804b000 is read-write and follows the Text Segment
+	so this chunk must be the Data Segment
+Therefore chunk 2, Start: 0x804a000, must correspond to the Data Segment
+and the bss Segment.
+
+>Regions f75da000 through f7781000 can be disregarded for this assignment
+as they have to do with libc
+This includes chunks 5-8, Start addresses f76e7000 - f7741000.
+
+With this in mind we can look back at what chunks are left, chunks 3, 4, and 9
+I believe this leaves us with chunks 3 and 4, Start addresses f7540000 and
+f7541000, belonging to the heap. However, chunk 4 appears to be read-only so
+it may be a part of some other piece. 
+
+Lastly, chunk 9 is the last chunk to be referred to in the virtual memory
+and is read-write. Therefore, I will assume it resides in the Stack Segment.
